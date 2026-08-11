@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wanderlust — Descubre tu Próximo Destino</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sand: #f5ede0;
+            --ink: #1a1410;
+            --gold: #c9a84c;
+            --coral: #e07a5f;
+            --ocean: #3d7a8a;
+            --moss: #5a7a4a;
+            --cream: #fdf8f2;
+            --muted: #8a7f74;
+            --card-bg: rgba(255,255,255,0.92);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--cream);
+            color: var(--ink);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Textured background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(ellipse 80% 50% at 10% 10%, rgba(201,168,76,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(61,122,138,0.07) 0%, transparent 60%),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 3rem 0 2.5rem;
+            position: relative;
+        }
+
+        .eyebrow {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.8rem, 6vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.05;
+            color: var(--ink);
+            letter-spacing: -0.02em;
+        }
+
+        header h1 span {
+            font-style: italic;
+            color: var(--coral);
+        }
+
+        header p {
+            margin-top: 1rem;
+            color: var(--muted);
+            font-size: 1rem;
+            font-weight: 300;
+            max-width: 420px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .header-line {
+            width: 60px;
+            height: 2px;
+            background: var(--gold);
+            margin: 1.5rem auto 0;
+        }
+
+        /* Layout grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+
+        /* Form card */
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(201,168,76,0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 40px rgba(26,20,16,0.06), 0 1px 0 rgba(201,168,76,0.2);
+        }
+
+        .form-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--ink);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group { margin-bottom: 1.25rem; }
+
+        label.field-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid rgba(26,20,16,0.12);
+            border-radius: 10px;
+            background: white;
+            color: var(--ink);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+        }
+
+        /* Checkboxes grid */
+        .checks-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+        }
+
+        .check-label {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.75rem 0.9rem;
+            border: 1.5px solid rgba(26,20,16,0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            font-weight: 400;
+            background: white;
+            user-select: none;
+        }
+
+        .check-label:hover {
+            border-color: var(--gold);
+            background: rgba(201,168,76,0.04);
+        }
+
+        .check-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--coral);
+            flex-shrink: 0;
+        }
+
+        .check-label.checked {
+            border-color: var(--coral);
+            background: rgba(224,122,95,0.07);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--ink);
+            color: var(--sand);
+            border: none;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.25s;
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--coral);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(224,122,95,0.3);
+        }
+
+        .btn-submit:active { transform: translateY(0); }
+
+        /* Result card */
+        .result-section { display: flex; flex-direction: column; gap: 1.5rem; }
+
+        .result-card {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 40px rgba(26,20,16,0.12);
+            display: none;
+            animation: slideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+        }
+
+        .result-card.visible { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-image-wrap {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .result-image-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+
+        .result-card:hover .result-image-wrap img { transform: scale(1.04); }
+
+        .result-image-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(26,20,16,0.75) 0%, transparent 60%);
+        }
+
+        .result-tags {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            padding: 0.25rem 0.65rem;
+            border-radius: 100px;
+        }
+
+        .result-body {
+            background: var(--ink);
+            color: white;
+            padding: 1.25rem 1.5rem 1.5rem;
+        }
+
+        .result-eyebrow {
+            font-size: 0.65rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+        }
+
+        .result-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 0.6rem;
+        }
+
+        .result-detail {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.65);
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .result-footer {
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .result-footer strong { color: var(--coral); font-weight: 500; }
+
+        /* History card */
+        .history-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(201,168,76,0.2);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 40px rgba(26,20,16,0.06);
+            flex: 1;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .history-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--ink);
+        }
+
+        .btn-clear {
+            font-size: 0.72rem;
+            color: var(--coral);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .btn-clear:hover { opacity: 1; }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            max-height: 260px;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+
+        .history-list::-webkit-scrollbar { width: 4px; }
+        .history-list::-webkit-scrollbar-track { background: transparent; }
+        .history-list::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 4px; }
+
+        .history-item {
+            background: white;
+            border: 1px solid rgba(26,20,16,0.07);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            animation: slideUp 0.3s ease;
+        }
+
+        .history-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.35rem;
+        }
+
+        .history-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--ink);
+        }
+
+        .history-date {
+            font-size: 0.7rem;
+            color: var(--muted);
+            font-weight: 300;
+        }
+
+        .history-interests {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .history-dest {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--ocean);
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        /* Score badge */
+        .score-badge {
+            display: inline-block;
+            background: rgba(201,168,76,0.12);
+            color: var(--gold);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            padding: 0.2rem 0.6rem;
+            border-radius: 100px;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <span class="eyebrow">✦ Recomendador de Viajes</span>
+            <h1>Encuentra tu próximo<br><span>destino ideal</span></h1>
+            <p>Cuéntanos quién eres y qué te mueve. Nosotros te decimos a dónde ir.</p>
+            <div class="header-line"></div>
+        </header>
+
+        <div class="grid">
+            <!-- Formulario -->
+            <div class="form-card">
+                <h2>🧭 Tus Preferencias</h2>
+                <form id="travelForm" novalidate>
+                    <div class="form-group">
+                        <label class="field-label" for="username">Tu nombre</label>
+                        <input type="text" id="username" required placeholder="Ej. María García">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="field-label">¿Qué experiencias buscas?</label>
+                        <div class="checks-grid">
+                            <label class="check-label" id="lbl-playa">
+                                <input type="checkbox" name="gustos" value="playa"> 🏖️ Playa y Relax
+                            </label>
+                            <label class="check-label" id="lbl-aventura">
+                                <input type="checkbox" name="gustos" value="aventura"> ⛰️ Aventura
+                            </label>
+                            <label class="check-label" id="lbl-cultura">
+                                <input type="checkbox" name="gustos" value="cultura"> 🏛️ Historia y Cultura
+                            </label>
+                            <label class="check-label" id="lbl-gastronomia">
+                                <input type="checkbox" name="gustos" value="gastronomia"> 🍕 Gastronomía
+                            </label>
+                            <label class="check-label" id="lbl-lujo">
+                                <input type="checkbox" name="gustos" value="lujo"> 💎 Lujo y Spa
+                            </label>
+                            <label class="check-label" id="lbl-naturaleza">
+                                <input type="checkbox" name="gustos" value="naturaleza"> 🌿 Naturaleza Pura
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="field-label" for="entorno">¿Qué entorno prefieres?</label>
+                        <select id="entorno">
+                            <option value="internacional">🌍 Internacional</option>
+                            <option value="local">🚗 Local / Cercano</option>
+                            <option value="indiferente">✨ Sorpréndeme</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Encontrar mi destino →</button>
+                </form>
+            </div>
+
+            <!-- Resultados e historial -->
+            <div class="result-section">
+                <div class="result-card" id="resultCard">
+                    <div class="result-image-wrap">
+                        <img id="resultImg" src="" alt="">
+                        <div class="result-image-overlay"></div>
+                        <div class="result-tags" id="resultTags"></div>
+                    </div>
+                    <div class="result-body">
+                        <div class="result-eyebrow">✦ Destino Recomendado</div>
+                        <div class="result-title" id="resultTitle"></div>
+                        <div class="result-detail" id="resultDetail"></div>
+                        <div class="result-footer" id="resultFooter"></div>
+                    </div>
+                </div>
+
+                <div class="history-card">
+                    <div class="history-header">
+                        <h3>📋 Viajeros Registrados</h3>
+                        <button class="btn-clear" id="clearBtn">Borrar todos</button>
+                    </div>
+                    <div class="history-list" id="historyList">
+                        <div class="history-empty">Aún no hay viajeros registrados.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ─── BASE DE DATOS AMPLIADA ───────────────────────────────────────────────
+    const destinos = [
+        // PLAYA — Internacional
+        {
+            nombre: "Maldivas",
+            pais: "Maldivas",
+            gustos: ["playa", "lujo"],
+            tipo: "internacional",
+            detalle: "Bungalows sobre el agua turquesa, arrecifes de coral y silencio absoluto. El paraíso existe y tiene código postal.",
+            img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+            tags: ["🏖️ Playa", "💎 Lujo"]
+        },
+        {
+            nombre: "Cancún & Riviera Maya",
+            pais: "México",
+            gustos: ["playa", "cultura"],
+            tipo: "internacional",
+            detalle: "Playas de arena blanca con el Caribe al frente y ruinas mayas a un paso. Vibra festiva de día y noche.",
+            img: "https://images.unsplash.com/photo-1552074284-5e88ef1aef18?w=800&q=80",
+            tags: ["🏖️ Playa", "🏛️ Cultura"]
+        },
+        {
+            nombre: "Bali",
+            pais: "Indonesia",
+            gustos: ["playa", "aventura", "cultura", "naturaleza"],
+            tipo: "internacional",
+            detalle: "Templos entre arrozales, olas perfectas en Uluwatu y mercados de incienso. Bali es una experiencia espiritual.",
+            img: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&q=80",
+            tags: ["🌿 Naturaleza", "🏖️ Playa", "🏛️ Cultura"]
+        },
+        {
+            nombre: "Santorini",
+            pais: "Grecia",
+            gustos: ["playa", "gastronomia", "lujo"],
+            tipo: "internacional",
+            detalle: "Cúpulas azules sobre el Egeo, vino local al atardecer y marisco fresco en cada callejuela blanca.",
+            img: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=800&q=80",
+            tags: ["🏖️ Playa", "🍕 Gastronomía"]
+        },
+        {
+            nombre: "Ibiza",
+            pais: "España",
+            gustos: ["playa", "gastronomia"],
+            tipo: "internacional",
+            detalle: "El Mediterráneo más festivo: calas escondidas de día, vida nocturna legendaria, y mercados hippies al atardecer.",
+            img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+            tags: ["🏖️ Playa", "🎶 Ocio"]
+        },
+
+        // AVENTURA — Internacional
+        {
+            nombre: "Costa Rica",
+            pais: "Costa Rica",
+            gustos: ["aventura", "naturaleza"],
+            tipo: "internacional",
+            detalle: "Volcanes activos, tirolinas sobre selva tropical y surfeo en el Pacífico. El pura vida no es un eslogan, es un estilo de vida.",
+            img: "https://images.unsplash.com/photo-1518500080250-69d37a1e2dae?w=800&q=80",
+            tags: ["⛰️ Aventura", "🌿 Naturaleza"]
+        },
+        {
+            nombre: "Patagonia",
+            pais: "Chile / Argentina",
+            gustos: ["aventura", "naturaleza"],
+            tipo: "internacional",
+            detalle: "Torres del Paine, glaciares infinitos y cóndores en el viento. La naturaleza en su versión más imponente y salvaje.",
+            img: "https://images.unsplash.com/photo-1519923041107-2db0e3d63f5a?w=800&q=80",
+            tags: ["⛰️ Aventura", "🌿 Naturaleza"]
+        },
+        {
+            nombre: "Nueva Zelanda",
+            pais: "Nueva Zelanda",
+            gustos: ["aventura", "naturaleza"],
+            tipo: "internacional",
+            detalle: "Fiordos, volcanes, paisajes de El Señor de los Anillos y una escena de deporte extremo sin igual en el mundo.",
+            img: "https://images.unsplash.com/photo-1469521669194-babb45599def?w=800&q=80",
+            tags: ["⛰️ Aventura", "🌿 Naturaleza"]
+        },
+        {
+            nombre: "Islandia",
+            pais: "Islandia",
+            gustos: ["aventura", "naturaleza"],
+            tipo: "internacional",
+            detalle: "Auroras boreales, géiseres humeantes y cascadas épicas. Un planeta aparte a solo 5 horas de vuelo.",
+            img: "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800&q=80",
+            tags: ["⛰️ Aventura", "🌿 Naturaleza"]
+        },
+        {
+            nombre: "Perú: Machu Picchu",
+            pais: "Perú",
+            gustos: ["aventura", "cultura", "naturaleza"],
+            tipo: "internacional",
+            detalle: "El camino inca entre nubes, la ciudadela perdida de los Andes y la gastronomía más creativa de América.",
+            img: "https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=800&q=80",
+            tags: ["⛰️ Aventura", "🏛️ Cultura"]
+        },
+
+        // CULTURA — Internacional
+        {
+            nombre: "Roma",
+            pais: "Italia",
+            gustos: ["cultura", "gastronomia"],
+            tipo: "internacional",
+            detalle: "El Coliseo, el Vaticano, la Fontana di Trevi... y la mejor pasta carbonara del universo conocido.",
+            img: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
+            tags: ["🏛️ Cultura", "🍕 Gastronomía"]
+        },
+        {
+            nombre: "Kioto",
+            pais: "Japón",
+            gustos: ["cultura", "gastronomia"],
+            tipo: "internacional",
+            detalle: "Templos zen entre bambúes, geishas en Gion y matcha en cada esquina. Japón antiguo intacto.",
+            img: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&q=80",
+            tags: ["🏛️ Cultura", "🌸 Tradición"]
+        },
+        {
+            nombre: "Atenas",
+            pais: "Grecia",
+            gustos: ["cultura", "gastronomia"],
+            tipo: "internacional",
+            detalle: "Cuna de la democracia, el arte y la filosofía. La Acrópolis de noche iluminada es una de las imágenes más poderosas del mundo.",
+            img: "https://images.unsplash.com/photo-1555993539-1732b0258235?w=800&q=80",
+            tags: ["🏛️ Cultura", "🏛️ Historia"]
+        },
+        {
+            nombre: "Marrakech",
+            pais: "Marruecos",
+            gustos: ["cultura", "gastronomia"],
+            tipo: "internacional",
+            detalle: "Zocos laberínticos, tajines aromáticos y riads con fuentes. Un choque sensorial extraordinario.",
+            img: "https://images.unsplash.com/photo-1489549132488-d00b7eee80f1?w=800&q=80",
+            tags: ["🏛️ Cultura", "🍕 Gastronomía"]
+        },
+        {
+            nombre: "Estambul",
+            pais: "Turquía",
+            gustos: ["cultura", "gastronomia"],
+            tipo: "internacional",
+            detalle: "Una ciudad que vive entre dos continentes: mezquitas y bares de raki, bazar de las especias y arte contemporáneo.",
+            img: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&q=80",
+            tags: ["🏛️ Cultura", "🌉 Histórico"]
+        },
+
+        // GASTRONOMÍA — Internacional
+        {
+            nombre: "París",
+            pais: "Francia",
+            gustos: ["gastronomia", "cultura", "lujo"],
+            tipo: "internacional",
+            detalle: "Croissants a las 7am, bistrós con vino natural, mercados bajo los puentes. La ciudad donde comer bien es un derecho.",
+            img: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&q=80",
+            tags: ["🍕 Gastronomía", "💎 Lujo"]
+        },
+        {
+            nombre: "Tokio",
+            pais: "Japón",
+            gustos: ["gastronomia", "cultura"],
+            tipo: "internacional",
+            detalle: "Más estrellas Michelin que ninguna otra ciudad, izakayas hasta el amanecer y conbinis que son un arte en sí mismos.",
+            img: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80",
+            tags: ["🍕 Gastronomía", "🌃 Ciudad"]
+        },
+        {
+            nombre: "Ciudad de México",
+            pais: "México",
+            gustos: ["gastronomia", "cultura"],
+            tipo: "internacional",
+            detalle: "Tacos al pastor, mercados de Coyoacán, museos clase mundial y la noche más larga de América Latina.",
+            img: "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?w=800&q=80",
+            tags: ["🍕 Gastronomía", "🏛️ Cultura"]
+        },
+        {
+            nombre: "Barcelona",
+            pais: "España",
+            gustos: ["gastronomia", "cultura", "playa"],
+            tipo: "internacional",
+            detalle: "Arquitectura de Gaudí, la Boqueria, pintxos en el Born y playa a 10 minutos. La ciudad que lo tiene todo.",
+            img: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&q=80",
+            tags: ["🍕 Gastronomía", "🏛️ Cultura", "🏖️ Playa"]
+        },
+
+        // LUJO — Internacional
+        {
+            nombre: "Dubái",
+            pais: "Emiratos Árabes",
+            gustos: ["lujo"],
+            tipo: "internacional",
+            detalle: "Rascacielos imposibles, desierto en 4x4 al atardecer y hoteles con playas privadas infinitas. El futuro existe aquí.",
+            img: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80",
+            tags: ["💎 Lujo", "🌃 Ciudad"]
+        },
+        {
+            nombre: "Mónaco & Riviera Francesa",
+            pais: "Francia / Mónaco",
+            gustos: ["lujo", "gastronomia", "playa"],
+            tipo: "internacional",
+            detalle: "Casino de Montecarlo, yates en el puerto de Cannes y restaurantes con los mejores chefs del mundo.",
+            img: "https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=800&q=80",
+            tags: ["💎 Lujo", "🏖️ Playa"]
+        },
+
+        // NATURALEZA — Internacional
+        {
+            nombre: "Amazonas Colombiano",
+            pais: "Colombia",
+            gustos: ["naturaleza", "aventura"],
+            tipo: "internacional",
+            detalle: "La selva más biodiversa del planeta. Delfines rosados, piranhas y comunidades indígenas en el corazón verde del mundo.",
+            img: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&q=80",
+            tags: ["🌿 Naturaleza", "⛰️ Aventura"]
+        },
+        {
+            nombre: "Galápagos",
+            pais: "Ecuador",
+            gustos: ["naturaleza", "aventura"],
+            tipo: "internacional",
+            detalle: "Iguanas marinas, tortugas gigantes y leones marinos sin miedo al hombre. Donde la evolución ocurrió ante tus ojos.",
+            img: "https://images.unsplash.com/photo-1548625149-720314317f0a?w=800&q=80",
+            tags: ["🌿 Naturaleza", "🐢 Fauna"]
+        },
+
+        // LOCALES — Colombia y vecinos
+        {
+            nombre: "Cartagena de Indias",
+            pais: "Colombia",
+            gustos: ["cultura", "playa", "gastronomia"],
+            tipo: "local",
+            detalle: "Ciudad amurallada de colores, pesca fresca en La Boquilla, cocteles de corozo y atardeceres dorados en el Caribe.",
+            img: "https://images.unsplash.com/photo-1567359781514-3b964e2b04d6?w=800&q=80",
+            tags: ["🏛️ Cultura", "🏖️ Playa"]
+        },
+        {
+            nombre: "El Eje Cafetero",
+            pais: "Colombia",
+            gustos: ["naturaleza", "aventura", "gastronomia"],
+            tipo: "local",
+            detalle: "Fincas cafeteras entre brumas, jeeps willys y el mejor café del planeta. Un viaje que despierta todos los sentidos.",
+            img: "https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=800&q=80",
+            tags: ["🌿 Naturaleza", "☕ Café"]
+        },
+        {
+            nombre: "San Andrés & Providencia",
+            pais: "Colombia",
+            gustos: ["playa", "naturaleza"],
+            tipo: "local",
+            detalle: "El mar de los siete colores, snorkeling en arrecifes vírgenes y la calma de una isla que aún no sabe que el tiempo existe.",
+            img: "https://images.unsplash.com/photo-1511300636408-a63a89df3482?w=800&q=80",
+            tags: ["🏖️ Playa", "🌿 Naturaleza"]
+        },
+        {
+            nombre: "Parque Tayrona",
+            pais: "Colombia",
+            gustos: ["naturaleza", "playa", "aventura"],
+            tipo: "local",
+            detalle: "Selva tropical que llega hasta el mar Caribe. Playas de piedras redondas, monos arañas y ecosistemas únicos.",
+            img: "https://images.unsplash.com/photo-1617999764988-3fb8fce5e38b?w=800&q=80",
+            tags: ["🌿 Naturaleza", "🏖️ Playa"]
+        },
+        {
+            nombre: "Villa de Leyva",
+            pais: "Colombia",
+            gustos: ["cultura", "naturaleza"],
+            tipo: "local",
+            detalle: "La plaza más grande de Colombia, fósiles de dinosaurio, vino local y arquitectura colonial intacta del siglo XVI.",
+            img: "https://images.unsplash.com/photo-1582653291997-079a1c04e5a1?w=800&q=80",
+            tags: ["🏛️ Cultura", "🌿 Naturaleza"]
+        },
+        {
+            nombre: "Desierto de la Tatacoa",
+            pais: "Colombia",
+            gustos: ["aventura", "naturaleza"],
+            tipo: "local",
+            detalle: "Cañones rojizos, cielos estrellados extraordinarios y el silencio de un desierto que sorprende dentro de un país tropical.",
+            img: "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=80",
+            tags: ["⛰️ Aventura", "🌿 Naturaleza"]
+        },
+        {
+            nombre: "Nuquí & Bahía Solano",
+            pais: "Colombia",
+            gustos: ["naturaleza", "aventura", "playa"],
+            tipo: "local",
+            detalle: "Selva del Chocó, ballenas jorobadas de julio a octubre, surfing salvaje y comunidades afro en el Pacífico profundo.",
+            img: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80",
+            tags: ["🌿 Naturaleza", "🐋 Ballenas"]
+        },
+        {
+            nombre: "Guatapé & El Peñol",
+            pais: "Colombia",
+            gustos: ["aventura", "naturaleza", "gastronomia"],
+            tipo: "local",
+            detalle: "740 escalones a la cima del Peñol para la mejor vista de Antioquia. Zocalos de colores y bandeja paisa al bajarse.",
+            img: "https://images.unsplash.com/photo-1617551307578-e2e2a23be8c4?w=800&q=80",
+            tags: ["⛰️ Aventura", "🌄 Paisaje"]
+        }
+    ];
+
+    // ─── SCORING: coincidencia múltiple ───────────────────────────────────────
+    function calcularDestino(gustosSeleccionados, entorno) {
+        let candidatos = destinos.map(d => {
+            // Contar cuántos gustos del usuario coinciden con el destino
+            const coincidencias = gustosSeleccionados.filter(g => d.gustos.includes(g)).length;
+            return { ...d, score: coincidencias };
+        }).filter(d => d.score > 0);
+
+        // Filtrar por entorno si aplica
+        if (entorno !== 'indiferente') {
+            const filtradosPorEntorno = candidatos.filter(d => d.tipo === entorno);
+            if (filtradosPorEntorno.length > 0) candidatos = filtradosPorEntorno;
+        }
+
+        // Si no hay ninguno, ir al azar de toda la base
+        if (candidatos.length === 0) {
+            return destinos[Math.floor(Math.random() * destinos.length)];
+        }
+
+        // Ordenar por score descendente
+        candidatos.sort((a, b) => b.score - a.score);
+
+        // Tomar los de mayor score y elegir uno aleatoriamente entre ellos para variedad
+        const maxScore = candidatos[0].score;
+        const mejores = candidatos.filter(d => d.score === maxScore);
+        return mejores[Math.floor(Math.random() * mejores.length)];
+    }
+
+    // ─── DOM ──────────────────────────────────────────────────────────────────
+    const form = document.getElementById('travelForm');
+    const resultCard = document.getElementById('resultCard');
+    const resultImg = document.getElementById('resultImg');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultDetail = document.getElementById('resultDetail');
+    const resultFooter = document.getElementById('resultFooter');
+    const resultTags = document.getElementById('resultTags');
+    const historyList = document.getElementById('historyList');
+    const clearBtn = document.getElementById('clearBtn');
+
+    // Checkboxes: toggle class visual
+    document.querySelectorAll('.check-label').forEach(lbl => {
+        lbl.addEventListener('change', () => {
+            const cb = lbl.querySelector('input[type="checkbox"]');
+            lbl.classList.toggle('checked', cb.checked);
+        });
+    });
+
+    // Cargar historial al iniciar
+    document.addEventListener('DOMContentLoaded', renderHistory);
+
+    // Submit
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+
+        const nombre = document.getElementById('username').value.trim();
+        const entorno = document.getElementById('entorno').value;
+        const gustos = [...document.querySelectorAll('input[name="gustos"]:checked')].map(c => c.value);
+
+        if (!nombre) {
+            alert('Por favor escribe tu nombre.');
+            return;
+        }
+
+        if (gustos.length === 0) {
+            alert('Selecciona al menos una experiencia que te interese.');
+            return;
+        }
+
+        const destino = calcularDestino(gustos, entorno);
+        showResult(nombre, destino, gustos);
+        saveUser(nombre, gustos, destino.nombre);
+        renderHistory();
+        form.reset();
+        document.querySelectorAll('.check-label').forEach(l => l.classList.remove('checked'));
+    });
+
+    // Mostrar resultado
+    function showResult(nombre, destino, gustos) {
+        // Resetear animación
+        resultCard.classList.remove('visible');
+        void resultCard.offsetWidth;
+
+        resultImg.src = destino.img;
+        resultImg.alt = destino.nombre;
+        resultTitle.textContent = `${destino.nombre}, ${destino.pais}`;
+        resultDetail.textContent = destino.detalle;
+        resultFooter.innerHTML = `Perfecto para <strong>${nombre}</strong> · ${gustos.join(', ')}`;
+
+        // Tags
+        resultTags.innerHTML = destino.tags.map(t =>
+            `<span class="tag">${t}</span>`
+        ).join('');
+
+        resultCard.classList.add('visible');
+    }
+
+    // LocalStorage
+    function saveUser(nombre, gustos, destino) {
+        const users = JSON.parse(localStorage.getItem('viajeros_wl') || '[]');
+        users.unshift({
+            nombre,
+            gustos,
+            destino,
+            fecha: new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
+        });
+        localStorage.setItem('viajeros_wl', JSON.stringify(users.slice(0, 50)));
+    }
+
+    function renderHistory() {
+        const users = JSON.parse(localStorage.getItem('viajeros_wl') || '[]');
+        if (users.length === 0) {
+            historyList.innerHTML = '<div class="history-empty">Aún no hay viajeros registrados.</div>';
+            return;
+        }
+        historyList.innerHTML = users.map(u => `
+            <div class="history-item">
+                <div class="history-item-top">
+                    <span class="history-name">👤 ${u.nombre}</span>
+                    <span class="history-date">${u.fecha}</span>
+                </div>
+                <div class="history-interests">Intereses: ${u.gustos.join(' · ')}</div>
+                <div class="history-dest">📍 ${u.destino}</div>
+            </div>
+        `).join('');
+    }
+
+    // Borrar historial
+    clearBtn.addEventListener('click', () => {
+        if (confirm('¿Borrar todos los registros de viajeros?')) {
+            localStorage.removeItem('viajeros_wl');
+            renderHistory();
+            resultCard.classList.remove('visible');
+        }
+    });
+    </script>
+</body>
+</html>
